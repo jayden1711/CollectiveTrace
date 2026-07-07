@@ -1,0 +1,11 @@
+# Analysis layer
+chakra  # execution trace format
+pandas
+numpy
+matplotlib
+
+# PyO3 bindings build tool
+maturin
+
+# Testing
+pytest

@@ -1,0 +1,27 @@
+# Rust
+target/
+Cargo.lock
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+dist/
+*.egg-info/
+.pytest_cache/
+
+# Trace files
+*.json.gz
+*.nsys-rep
+*.sqlite
+*.nccl-log
+
+# Build 
+*.so
+*.pyd
+maturin/
+
+# IDE
+.vscode/
+.idea/
