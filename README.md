@@ -84,7 +84,3 @@ fixtures/                fixture generator and generated trace files
 =======
 - [Lagom](https://arxiv.org/abs/2402.15512): current frontier on compute-communication overlap contention
 - CUPTI documentation: underlying interface for kernel-level GPU activity collection
-
-
-
->>>>>>> origin/main
