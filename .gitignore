@@ -1,6 +1,5 @@
 # Rust
 target/
-Cargo.lock
 
 # Python
 __pycache__/
@@ -25,3 +24,4 @@ maturin/
 # IDE
 .vscode/
 .idea/
+.DS_Store

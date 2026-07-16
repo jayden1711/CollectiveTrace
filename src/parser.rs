@@ -1,27 +1,45 @@
 use serde::Deserialize;
+use std::fs;
+use std::io;
+use std::path::Path;
 
-// A single event from a trace source (Kineto, Nsight, NCCL)
-#[derive(Debug, Deserialize)]
-pub struct TraceEvent {
-    pub name: String,
-    pub ts: f64,        // timestamp in microseconds
-    pub dur: f64,       // duration in microseconds
-    pub cat: String,    // category: "kernel", "collective"
+#[derive(Deserialize)]
+struct TraceFile {
+    #[serde(rename = "traceEvents")]
+    trace_events: Vec<TraceEvent>,
 }
 
-// Each parser takes in one trace source and returns a vec of events
-pub trait TraceParser {
-    fn name(&self) -> &'static str;
-    fn parse(&self, path: &str) -> anyhow::Result<Vec<TraceEvent>>;
+#[derive(Deserialize)]
+struct TraceEvent {
+    #[allow(dead_code)]
+    name: Option<String>,
+    #[allow(dead_code)]
+    ts: Option<f64>,
+    dur: Option<f64>,
+    #[allow(dead_code)]
+    pid: Option<i64>,
+    #[allow(dead_code)]
+    tid: Option<i64>,
 }
 
-// Kineto JSON trace parser
-pub struct KinetoParser;
-impl TraceParser for KinetoParser {
-    fn name(&self) -> &'static str { "kineto" }
-    fn parse(&self, path: &str) -> anyhow::Result<Vec<TraceEvent>> {
-        let content = std::fs::read_to_string(path)?;
-        let events: Vec<TraceEvent> = serde_json::from_str(&content)?;
-        Ok(events)
-    }
+pub struct TraceSummary {
+    pub event_count: usize,
+    pub total_duration_us: f64,
+}
+
+pub fn parse_file(path: &Path) -> io::Result<TraceSummary> {
+    let data = fs::read_to_string(path)?;
+    let trace: TraceFile = serde_json::from_str(&data)
+        .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
+
+    let total_duration_us: f64 = trace
+        .trace_events
+        .iter()
+        .filter_map(|event| event.dur)
+        .sum();
+
+    Ok(TraceSummary {
+        event_count: trace.trace_events.len(),
+        total_duration_us,
+    })
 }
